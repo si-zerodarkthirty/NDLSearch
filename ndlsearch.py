@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import openpyxl
 
-def getNDLItemsByAuthor(author):
+def getNDLItemsByAuthor(author,fileName):
     target_url = 'https://iss.ndl.go.jp/api/opensearch?creator='+author
     soup = BeautifulSoup(requests.get(target_url).text, 'lxml')
     
@@ -48,8 +48,8 @@ def getNDLItemsByAuthor(author):
         items.append(item)
         
     columns = ['著書・論文名','収録書誌名','出版社・発行所','巻・号','出版年','著者']
-    pd.DataFrame(items).to_excel('JPROK1.xlsx', sheet_name=author, columns=columns, encoding="cp932")
+    pd.DataFrame(items).to_excel(fileName+'.xlsx', sheet_name=author, columns=columns, encoding="cp932")
 
 
 
-getNDLItemsByAuthor('吉澤文寿')
+getNDLItemsByAuthor('吉澤文寿','JP-RoK')
