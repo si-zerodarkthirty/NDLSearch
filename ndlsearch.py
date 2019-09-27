@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import openpyxl
 
-def getNDLItemsByAuthor(author,fileName):
+def getNDLItemsByAuthor(author):
     target_url = 'https://iss.ndl.go.jp/api/opensearch?creator='+author
     soup = BeautifulSoup(requests.get(target_url).text, 'lxml')
     
@@ -37,19 +36,16 @@ def getNDLItemsByAuthor(author,fileName):
                      item['巻・号'] = row.td.text.strip()
                 if item['出版社・発行所'] == '':
                     if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
-                        linkToPubPage = row.td.a.get('href')
-                        pubPage = BeautifulSoup(requests.get(linkToPubPage).text, 'lxml')
-                        rows = pubPage.find_all('tr')
-                        for row in rows:
-                            if not row.th is None:
-                                if row.th.text.strip() == '出版社':
-                                    item['出版社・発行所'] = row.td.text.strip()     
+                        if not row.td.a is None:
+                            linkToPubPage = row.td.a.get('href')
+                            pubPage = BeautifulSoup(requests.get(linkToPubPage).text, 'lxml')
+                            rows = pubPage.find_all('tr')
+                            for row in rows:
+                                if not row.th is None:
+                                    if row.th.text.strip() == '出版社':
+                                        item['出版社・発行所'] = row.td.text.strip()     
                           
         items.append(item)
         
     columns = ['著書・論文名','収録書誌名','出版社・発行所','巻・号','出版年','著者']
-    pd.DataFrame(items).to_excel(fileName+'.xlsx', sheet_name=author, columns=columns, encoding="cp932")
-
-
-
-getNDLItemsByAuthor('吉澤文寿','JP-RoK')
+    pd.DataFrame(items).to_excel(author+'.xlsx', sheet_name=author, columns=columns, encoding="cp932")
