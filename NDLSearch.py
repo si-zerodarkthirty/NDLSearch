@@ -9,7 +9,7 @@ def getNDLItemsByAuthor(author):
     soup = BeautifulSoup(requests.get(target_url).text, 'lxml')
     
     linksToItemPages = []
-    for guid in soup.find_all('guid')[10:11]:
+    for guid in soup.find_all('guid'):
         linksToItemPages.append(guid.text)
     
     itemPages = []
