@@ -31,6 +31,9 @@ def getNDLItemsByAuthor(author):
             if not row.th is None:
                 if row.th.text.strip() == 'タイトル':
                     item['著書・論文名'] = row.td.text.strip()
+                if row.th.text.strip() == '部分タイトル':
+                    if author in row.td.strip():
+                        item['著書・論文名'] = row.td.strip() + '/' + item['著書・論文名']
                 if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
                      item['収録書誌名'] = row.td.text.strip()
                 if row.th.text.strip() == '著者':
@@ -58,7 +61,7 @@ def getNDLItemsByAuthor(author):
     pd.DataFrame(items).to_excel(author+'.xlsx', sheet_name=author, columns=columns, encoding="cp932")
 ```
 
-3. 上のメニューバーにある「＋」ボタンを押すと、スクリプトをペーストしたボックスの下に、新しいボックスが追加されます。新しいボックスに、下のコードを貼り付けたのち、「著者名」の部分に検索したい著者名をスペースなしで入れてください。
+3. 上のメニューバーにある「＋」ボタンを押すと、スクリプトをペーストしたボックスの下に、新しいボックスが追加されます。新しいボックスに、下のコードを貼り付けたのち、「著者名」の部分に検索したい著者名を入れてください。
 
 ```python
 getNDLItemsByAuthor('著者名')
@@ -72,7 +75,6 @@ getNDLItemsByAuthor('著者名')
 
 # 注意事項・補足
 
-- 検索対象が、書籍の中の一章のみを執筆している場合などは、執筆している章のタイトルまでを取得することはできません。
 - 完成後のExcelファイル内で、重複を削除したい場合は、Excelの「データ」から「重複の削除」を選ぶと自動でやってくれます。
 - シートを一つのファイルに統合したい場合には、ファイル内のシートを右クリックして、「移動またはコピー」をクリックし、移動先のファイルを選んでください。
 - 同姓同名の人は弾けません。
