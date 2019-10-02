@@ -33,11 +33,11 @@ def getNDLItemsByAuthor(author):
                     item['著書・論文名'] = row.td.text.strip()
                 if row.th.text.strip() == '部分タイトル':
                     if author in row.td.text.strip():
-                        item['著書・論文名'] = row.td.text.strip() + '/' + item['著書・論文名']
+                        item['著書・論文名'] = row.td.text.strip()
                 if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
                      item['収録書誌名'] = row.td.text.strip()
                 if row.th.text.strip() == '著者':
-                     item['著者'] = row.td.text.strip()
+                     item['著者'] = item['著者'] + ' ' + row.td.text.strip()
                 if row.th.text.strip() == '出版社':
                      item['出版社・発行所'] = row.td.text.strip()
                 if row.th.text.strip() in ['出版年(W3CDTF)','出版年月日等']:
