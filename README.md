@@ -39,7 +39,7 @@ def getNDLItemsByAuthor(author):
                      item['出版社・発行所'] = row.td.text.strip()
                 if row.th.text.strip() in ['出版年(W3CDTF)','出版年月日等']:
                      item['出版年'] = row.td.text.strip()
-                if row.th.text.strip() in ['掲載号','掲載巻']:
+                if row.th.text.strip() in ['掲載号','掲載巻','掲載通号']:
                      item['巻・号'] = row.td.text.strip()
                 if item['出版社・発行所'] == '':
                     if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
