@@ -33,6 +33,7 @@ def getNDLItemsByAuthor(author):
                     item['著書・論文名'] = row.td.text.strip()
                 if row.th.text.strip() == '部分タイトル':
                     if author in row.td.text.strip():
+                        item['収録書誌名'] = item['著書・論文名']
                         item['著書・論文名'] = row.td.text.strip()
                 if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
                      item['収録書誌名'] = row.td.text.strip()
