@@ -4,7 +4,7 @@
 
 2. グレーの細長いボックスの中に、下のスクリプトをペーストしてください。
 ```python
-!pip install bs4 openpyxl lxml
+!pip install bs4 openpyxl lxml progressbar
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -37,6 +37,7 @@ def getNDLItemsByAuthor(author):
             '出版年': '',
         }
         rows = itemPage.find_all('tr')
+        bar.start()
         for row in rows:
             if not row.th is None:
                 if row.th.text.strip() == 'タイトル':
@@ -48,7 +49,7 @@ def getNDLItemsByAuthor(author):
                 if row.th.text.strip() in ['掲載誌名','掲載誌情報（URI形式）']:
                     item['収録書誌名'] = row.td.text.strip()
                 if row.th.text.strip() == '著者':
-                    if item['著者'] = '':
+                    if item['著者'] == '':
                         item['著者'] = row.td.text.strip()
                     else:
                         item['著者'] = item['著者'] + ',' + row.td.text.strip()
@@ -67,8 +68,8 @@ def getNDLItemsByAuthor(author):
                             for row in rows:
                                 if not row.th is None:
                                     if row.th.text.strip() == '出版社':
-                                        item['出版社・発行所'] = row.td.text.strip()     
-                          
+                                        item['出版社・発行所'] = row.td.text.strip()  
+        bar.finish()            
         items.append(item)
         
     columns = ['著者','著書・論文名','収録書誌名','巻・号','出版社・発行所','出版年']
@@ -78,9 +79,7 @@ def getNDLItemsByAuthor(author):
 3. 上のメニューバーにある「＋」ボタンを押すと、スクリプトをペーストしたボックスの下に、新しいボックスが追加されます。新しいボックスに、下のコードを貼り付けたのち、「著者名」の部分に検索したい著者名を入れてください。
 
 ```python
-bar.start()
 getNDLItemsByAuthor('著者名')
-bar.finish()
 ```
 
 4. 一つ目のボックス（スクリプトをペーストしたボックス）をクリックして、そのボックスが選択されている状態にしてください。
