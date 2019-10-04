@@ -26,6 +26,7 @@ def getNDLItemsByAuthor(author):
     for itemPage in itemPages:
         item = {}
         item['出版社・発行所'] = ''
+        item['著者'] = ''
         rows = itemPage.find_all('tr')
         for row in rows:
             if not row.th is None:
