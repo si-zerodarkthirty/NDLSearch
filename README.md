@@ -4,28 +4,33 @@
 
 2. グレーの細長いボックスの中に、下のスクリプトをペーストしてください。
 ```python
-!pip install bs4 openpyxl lxml progressbar
+!pip install bs4 openpyxl lxml
 import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 import openpyxl
-import progressbar
-from time import sleep
-bar = progressbar.ProgressBar(maxval=20, \
-    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+import time
+from bs4 import BeautifulSoup
+from operator import itemgetter
+import pandas as pd
 
 def getNDLItemsByAuthor(author):
     target_url = 'https://iss.ndl.go.jp/api/opensearch?creator='+author
     soup = BeautifulSoup(requests.get(target_url).text, 'lxml')
+    print('Search Results Obtained.')
     
     linksToItemPages = []
     for guid in soup.find_all('guid'):
-        linksToItemPages.append(guid.text)
+        linksToItemPages.append(guid.text)  
+        print('', end=f'\r{len(linksToItemPages)} Items Found.')
+        time.sleep(0.2)
+    print('')
     
     itemPages = []
     for link in linksToItemPages:
         itemPages.append(BeautifulSoup(requests.get(link).text, 'lxml'))
-    
+        print('', end=f'\rPage Data Extracted: {len(itemPages)/len(linksToItemPages)*100}%')
+        time.sleep(0.2)
+    print('')
+
     items = []
     for itemPage in itemPages:
         item = {
@@ -37,7 +42,6 @@ def getNDLItemsByAuthor(author):
             '出版年': '',
         }
         rows = itemPage.find_all('tr')
-        bar.start()
         for row in rows:
             if not row.th is None:
                 if row.th.text.strip() == 'タイトル':
@@ -68,12 +72,17 @@ def getNDLItemsByAuthor(author):
                             for row in rows:
                                 if not row.th is None:
                                     if row.th.text.strip() == '出版社':
-                                        item['出版社・発行所'] = row.td.text.strip()  
-        bar.finish()            
+                                        item['出版社・発行所'] = row.td.text.strip() 
         items.append(item)
-        
+        print(str(len(itemPages)) + ' Page Data Obtained', end=f'\rPage Data Saved: {len(items)/len(itemPages)*100}%')
+        time.sleep(0.2)
+        items = sorted(items, key=itemgetter('出版年')) 
+    print('')
+    
+    print('Writing Data to an Excel Sheet.')
     columns = ['著者','著書・論文名','収録書誌名','巻・号','出版社・発行所','出版年']
     pd.DataFrame(items).to_excel(author+'.xlsx', sheet_name=author, columns=columns, encoding="cp932")
+    print('Mission Accomplished. Please Download the Output File.')
 ```
 
 3. 上のメニューバーにある「＋」ボタンを押すと、スクリプトをペーストしたボックスの下に、新しいボックスが追加されます。新しいボックスに、下のコードを貼り付けたのち、「著者名」の部分に検索したい著者名を入れてください。
@@ -85,10 +94,3 @@ getNDLItemsByAuthor('著者名')
 4. 一つ目のボックス（スクリプトをペーストしたボックス）をクリックして、そのボックスが選択されている状態にしてください。
 5. 上のメニューバーにある再生ボタン（三角形のボタン）を2回連続で押すと、処理がスタートします。
 6. 処理が終わると、画面左のファイルリストに「著者名.xlsx」というExcelファイルが現れます。右クリックで「ダウンロード」を選択してください。
-7. 適宜、フォーマット修正や重複部分の削除などを行ってください。
-
-# 注意事項・補足
-
-- 完成後のExcelファイル内で、重複を削除したい場合は、Excelの「データ」から「重複の削除」を選ぶと自動でやってくれます。
-- シートを一つのファイルに統合したい場合には、ファイル内のシートを右クリックして、「移動またはコピー」をクリックし、移動先のファイルを選んでください。
-- 同姓同名の人は弾けません。
