@@ -74,7 +74,7 @@ def getNDLItemsByAuthor(author):
                                     if row.th.text.strip() == '出版社':
                                         item['出版社・発行所'] = row.td.text.strip() 
         items.append(item)
-        print(str(len(itemPages)) + ' Page Data Obtained', end=f'\rPage Data Saved: {len(items)/len(itemPages)*100}%')
+        print('', end=f'\rPage Data Saved: {len(items)/len(itemPages)*100}%')
         time.sleep(0.2)
         items = sorted(items, key=itemgetter('出版年')) 
     print('')
